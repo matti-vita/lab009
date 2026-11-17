@@ -10,8 +10,11 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -47,6 +50,9 @@ public class BadIOGUI {
         final JButton write = new JButton("Write on file");
         panel.add(write);
         canvas.add(panel, BorderLayout.CENTER);
+        final JButton read = new JButton("Read");
+        panel.add(read);
+
         frame.setContentPane(canvas);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     
 
@@ -66,6 +72,23 @@ public class BadIOGUI {
                      */
                     try (PrintStream ps = new PrintStream(PATH, StandardCharsets.UTF_8)) {
                         ps.print(randomGenerator.nextInt());
+                    } catch (final IOException e) {
+                        JOptionPane.showMessageDialog(frame, e, "Error", JOptionPane.ERROR_MESSAGE);
+                        e.printStackTrace(); // NOPMD: allowed as this is just an exercise
+                    }
+                }
+            }
+        );
+
+        read.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent ignored) {
+                    try {
+                        final List<String> lines = Files.readAllLines(new File(PATH).toPath());
+                        for (final String line : lines) {
+                            IO.println(line);
+                        }
                     } catch (final IOException e) {
                         JOptionPane.showMessageDialog(frame, e, "Error", JOptionPane.ERROR_MESSAGE);
                         e.printStackTrace(); // NOPMD: allowed as this is just an exercise
